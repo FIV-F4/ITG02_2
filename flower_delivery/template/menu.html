@@ -1,0 +1,54 @@
+<!-- menu.html -->
+<nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+    <div class="position-sticky">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'home' %}">
+                    Главная
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'catalog' %}">
+                    Каталог
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="">
+                    Оформление заказа
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="">
+                    Мои заказы
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="">
+                    Отзывы
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="">
+                    Аналитика
+                </a>
+            </li>
+            {% if user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link" href="">
+                        Администрирование
+                    </a>
+                </li>
+            {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="">
+                    Telegram бот
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="">
+                    Профиль
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

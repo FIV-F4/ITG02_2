@@ -1,0 +1,54 @@
+<!-- menu.html -->
+<nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+    <div class="position-sticky">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'home' %}">
+                    Главная
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'catalog' %}">
+                    Каталог
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'order_form' %}">
+                    Оформление заказа
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'order_history' %}">
+                    Мои заказы
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'reviews' %}">
+                    Отзывы
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'analytics' %}">
+                    Аналитика
+                </a>
+            </li>
+            {% if user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'admin_dashboard' %}">
+                        Администрирование
+                    </a>
+                </li>
+            {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'bot_info' %}">
+                    Telegram бот
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'profile' %}">
+                    Профиль
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
