@@ -1,0 +1,20 @@
+<!-- module_orders/templates/module_orders/cart.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Ваша корзина</h2>
+
+{% if order %}
+    <p>Заказ №{{ order.id }}</p>
+    <ul>
+        {% for order_product in order_products %}
+            <li>{{ order_product.product.name }} - {{ order_product.quantity }} шт. - {{ order_product.price }} руб.</li>
+        {% endfor %}
+    </ul>
+    <p>Итого: {{ total_price }} руб.</p>
+
+    <a href="{% url 'checkout' %}" class="btn btn-primary">Оформить заказ</a>
+{% else %}
+    <p>Ваша корзина пуста.</p>
+{% endif %}
+{% endblock %}

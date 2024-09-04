@@ -1,0 +1,30 @@
+<!-- module_orders/order_list.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Меню заказов</h1>
+
+<ul>
+    {% for order, order_product_list in order_products %}
+        <li>
+            <h2>Заказ #{{ order.id }} - {{ order.get_status_display }}</h2>
+            <p>Дата заказа: {{ order.date }}</p>
+
+            <ul>
+                {% for order_product in order_product_list %}
+                    <li>
+                        <img src="{{ order_product.product.image.url }}" alt="{{ order_product.product.name }}" style="width: 100px; height: 100px;">
+                        <p>Продукт: {{ order_product.product.name }}</p>
+                        <p>Количество: {{ order_product.quantity }}</p>
+                        <p>Цена: {{ order_product.price }}</p>
+                        <form action="{% url 'add_to_cart' order_product.product.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit">Добавить в корзину</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}
