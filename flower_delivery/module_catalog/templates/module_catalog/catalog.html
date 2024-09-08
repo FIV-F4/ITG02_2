@@ -14,7 +14,9 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ product.name }}</h5>
                         <p class="card-text">{{ product.price }}</p>
-                         <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary">Добавить в корзину</a>
+                        <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary">Добавить в корзину</a>
+                        <!-- Кнопка "Отзывы" -->
+                        <a href="{% url 'product_reviews' product.id %}" class="btn btn-secondary mt-2">Отзывы</a>
                     </div>
                 </div>
             </div>

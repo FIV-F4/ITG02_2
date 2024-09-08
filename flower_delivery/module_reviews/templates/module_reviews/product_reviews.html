@@ -1,0 +1,23 @@
+<!-- module_reviews/product_reviews.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Отзывы о {{ product.name }}</h1>
+
+<ul>
+    {% for review in reviews %}
+        <li>
+            <strong>{{ review.user.username }}</strong> ({{ review.created_at|date:"d.m.Y" }})<br>
+            Рейтинг: {{ review.rating }}/5<br>
+            <p>{{ review.comment }}</p>
+        </li>
+    {% endfor %}
+</ul>
+
+<h2>Добавить отзыв</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Отправить отзыв</button>
+</form>
+{% endblock %}

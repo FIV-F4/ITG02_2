@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Аналитика и Отчеты{% endblock %}
+
+{% block content %}
+<h1>Аналитика и Отчеты</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Дата</th>
+            <th>Заказ</th>
+            <th>Данные по продажам</th>
+            <th>Прибыль</th>
+            <th>Расходы</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for report in reports %}
+        <tr>
+            <td>{{ report.id }}</td>
+            <td>{{ report.date }}</td>
+            <td>{{ report.order.id }}</td>
+            <td>{{ report.sales_data }}</td>
+            <td>{{ report.profit }}</td>
+            <td>{{ report.expenses }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

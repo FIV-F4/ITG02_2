@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'module_reg_auth_user',
     'module_catalog',
     'module_orders',
+    'module_reviews',
+    'module_analytics',
 
 
 ]

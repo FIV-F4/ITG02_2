@@ -26,6 +26,9 @@ urlpatterns = [
     path('catalog/', include('module_catalog.urls')),
     path('accounts/', include('module_reg_auth_user.urls')),
     path('orders/', include('module_orders.urls')),
+    path('reviews/', include('module_reviews.urls')),
+    path('analytics/', include('module_analytics.urls')),
+
 ]
 
 if settings.DEBUG:
