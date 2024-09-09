@@ -1,3 +1,6 @@
-from django.shortcuts import render
+from django.http import HttpResponse
+from .bot import start_bot
 
-# Create your views here.
+def start_telegram_bot(request):
+    start_bot()
+    return HttpResponse("Telegram бот запущен.")

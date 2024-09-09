@@ -1,68 +1,123 @@
+import asyncio
+from aiogram import Bot, Router, Dispatcher, F
+from aiogram.types import Message, CallbackQuery
+from aiogram.filters import Command, CommandStart
+from module_telegram.config import TOKEN
+from asgiref.sync import sync_to_async
 import logging
-from aiogram import Bot, Dispatcher, types
-from aiogram.utils import executor
-from aiogram.contrib.middlewares.logging import LoggingMiddleware
-from django.conf import settings
-from module_orders.models import Order, OrderProduct
-from module_catalog.models import Products
 
-# Вставьте сюда ваш API токен Telegram бота
-API_TOKEN = 'YOUR_API_TOKEN'
-
-# Настройка логирования
 logging.basicConfig(level=logging.INFO)
 
-# Инициализация бота и диспетчера
-bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
-dp.middleware.setup(LoggingMiddleware())
+# Установка бота
+bot = Bot(token=TOKEN)
+router = Router()
 
 
-# Команда /start для приветствия пользователя
-@dp.message_handler(commands=['start'])
-async def send_welcome(message: types.Message):
-    await message.reply("Привет! Я бот для отслеживания заказов и получения аналитики по заказам.")
+# Обработчик команды /get_order
+@router.message(Command('get_order'))
+async def get_order(message: Message):
+    from module_telegram.database import get_order_details
+    user_id = message.from_user.id
 
+    # Асинхронный вызов функции для получения деталей заказа
+    order_details = await sync_to_async(get_order_details)(user_id)
 
-# Команда для получения списка заказов
-@dp.message_handler(commands=['orders'])
-async def list_orders(message: types.Message):
-    user_orders = Order.objects.filter(user__username=message.from_user.username)
-    if user_orders.exists():
-        response = "Ваши заказы:\n"
-        for order in user_orders:
-            response += f"\nЗаказ #{order.id} - Статус: {order.get_status_display()}\n"
-            for order_product in OrderProduct.objects.filter(order=order):
-                response += f"  Продукт: {order_product.product.name} - Количество: {order_product.quantity}\n"
-        await message.reply(response)
+    if order_details:
+        await message.answer(f"Ваш заказ:\n{order_details}")
     else:
-        await message.reply("У вас нет заказов.")
+        await message.answer("У вас нет активных заказов.")
 
 
-# Команда для получения аналитики по заказам
-@dp.message_handler(commands=['analytics'])
-async def order_analytics(message: types.Message):
-    total_orders = Order.objects.count()
-    total_delivered = Order.objects.filter(status='delivered').count()
-    total_cancelled = Order.objects.filter(status='cancelled').count()
+# Функция уведомления пользователя о статусе заказа
+async def notify_order_status(order_id, status):
+    from module_telegram.database import get_order_user
 
-    response = (f"Аналитика по заказам:\n"
-                f"Всего заказов: {total_orders}\n"
-                f"Доставлено: {total_delivered}\n"
-                f"Отменено: {total_cancelled}\n")
+    # Асинхронный вызов функции для получения user_id по order_id
+    user_id = await sync_to_async(get_order_user)(order_id)
 
-    await message.reply(response)
+    await bot.send_message(user_id, f"Статус вашего заказа #{order_id} изменён на '{status}'.")
 
 
-# Уведомления о смене статуса заказа
-async def notify_status_change(order_id):
-    order = Order.objects.get(id=order_id)
-    user = order.user
-    status = order.get_status_display()
+# Обработчик команды /update_order
+@router.message(Command('update_order'))
+async def update_order(message: Message):
+    from module_telegram.database import update_order_status
+    order_id = int(message.get_args())
+    new_status = "ordered"
 
-    await bot.send_message(user.telegram_id, f"Ваш заказ #{order.id} теперь имеет статус: {status}")
+    # Асинхронное обновление статуса заказа
+    await sync_to_async(update_order_status)(order_id, new_status)
+
+    await notify_order_status(order_id, new_status)
+    await message.answer(f"Статус заказа #{order_id} изменён на '{new_status}'.")
 
 
-# Запуск бота
-def start_bot():
-    executor.start_polling(dp, skip_updates=True)
+# Обработчик команды /order_report
+@router.message(Command('order_report'))
+async def order_report(message: Message):
+    from module_telegram.database import get_order_report
+
+    # Асинхронный вызов функции для получения отчёта
+    report = await sync_to_async(get_order_report)()
+
+    if report:
+        await message.answer(f"Аналитика заказов:\n{report}")
+    else:
+        await message.answer("Нет данных для отчёта.")
+
+
+# Обработчик команды /start
+@router.message(CommandStart())
+async def start(message: Message):
+    from module_telegram.keyboards import create_order_keyboard
+    print(message)
+    await message.answer(
+        f"Привет, {message.from_user.full_name}! Я бот для управления заказами.",
+        reply_markup=create_order_keyboard()
+    )
+
+
+# Обработка callback-запроса на получение заказа
+@router.callback_query(F.data == "get_order")
+async def process_get_order(callback: CallbackQuery):
+    from module_telegram.database import get_order_details
+    user_id = callback.from_user.id
+
+    # Асинхронный вызов функции для получения деталей заказа
+    order_details = await sync_to_async(get_order_details)(user_id)
+
+    if order_details:
+        await callback.message.answer(f"Ваш заказ:\n{order_details}")
+    else:
+        await callback.message.answer("У вас нет активных заказов.")
+
+    await callback.answer()
+
+
+# Обработка callback-запроса на получение отчёта
+@router.callback_query(F.data == "order_report")
+async def process_order_report(callback: CallbackQuery):
+    from module_telegram.database import get_order_report
+
+    # Асинхронный вызов функции для получения отчёта
+    report = await sync_to_async(get_order_report)()
+
+    if report:
+        await callback.message.answer(f"Аналитика заказов:\n{report}")
+    else:
+        await callback.message.answer("Нет данных для отчёта.")
+
+    await callback.answer()
+
+
+# Основная функция запуска бота
+async def main():
+    dp = Dispatcher()
+    dp.include_router(router)
+
+    # Запуск polling для бота
+    await dp.start_polling(bot)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

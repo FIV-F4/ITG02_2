@@ -6,6 +6,8 @@ from module_catalog.models import Products
 from .forms import DeliveryForm
 from django.db.models import Prefetch
 from django.contrib import messages
+from django.shortcuts import redirect
+from module_telegram.bot import notify_order_status
 
 @login_required
 def cart_view(request):
@@ -103,3 +105,14 @@ def order_list_view(request):
         'order_products': order_products,
     }
     return render(request, 'module_orders/order_list.html', context)
+
+def update_order_status(request, order_id, new_status):
+    order = Order.objects.get(id=order_id)
+    order.status = new_status
+    order.save()
+
+    # Вызываем асинхронную функцию уведомления
+    from asgiref.sync import async_to_sync
+    async_to_sync(notify_order_status)(order_id, new_status)
+
+    return redirect('order_list')

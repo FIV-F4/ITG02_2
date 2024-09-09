@@ -1,4 +1,7 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 
 # Create your models here.
 class Order(models.Model):
@@ -31,3 +34,10 @@ class Delivery(models.Model):
     address = models.CharField(max_length=255)
     date = models.DateTimeField(auto_now_add=True)
     info = models.TextField(blank=True, null=True)
+
+@receiver(post_save, sender=Order)
+def send_status_update(sender, instance, **kwargs):
+    if instance.status != 'cart':  # Уведомляем только при изменении статуса
+        # Вызов асинхронной функции уведомления
+        import asyncio
+        asyncio.run(notify_status_change(instance.id))

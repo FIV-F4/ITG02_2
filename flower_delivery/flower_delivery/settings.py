@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'module_orders',
     'module_reviews',
     'module_analytics',
+    'module_telegram',
 
 
 ]

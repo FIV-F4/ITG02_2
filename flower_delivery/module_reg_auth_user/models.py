@@ -29,7 +29,7 @@ class User(AbstractUser):
 
     # Дополнительное поле для имени пользователя
     name = models.CharField(max_length=255, blank=True, null=True, help_text='Имя пользователя')
-
+    telegram_id = models.CharField(max_length=50, blank=True, null=True, help_text='Telegram ID пользователя')
     class Meta:
         permissions = [
             ("view_profile", "Can view profile"),

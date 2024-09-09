@@ -5,5 +5,5 @@ from .models import User
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     fieldsets = BaseUserAdmin.fieldsets + (
-        (None, {'fields': ('phone', 'address', 'name')}),
+        (None, {'fields': ('phone', 'address', 'name', 'telegram_id')}),
     )
