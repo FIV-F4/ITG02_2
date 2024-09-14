@@ -1,5 +1,4 @@
 # module_orders/admin.py
-
 from django.contrib import admin
 from .models import Order, OrderProduct, Delivery
 from django.core.exceptions import ObjectDoesNotExist
@@ -15,11 +14,15 @@ class DeliveryInline(admin.StackedInline):
         readonly_fields = ('address', 'date', 'info')  # Только для чтения
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'status', 'date','delivery_address')
+    list_display = ('id', 'user', 'get_username', 'status', 'date','delivery_address')
     inlines = [OrderProductInline, DeliveryInline]
     list_filter = ('status', 'date')
     search_fields = ('user__username', 'status')
     list_editable = ('status',)
+
+    def get_username(self, obj):
+        return obj.user.username  # Получаем username пользователя через объект user
+    get_username.short_description = 'Username'  # Описание для колонки в админке
 
     def delivery_address(self, obj):
         try:

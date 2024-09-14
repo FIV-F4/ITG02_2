@@ -1,3 +1,8 @@
+"""
+Путь: module_analytics/urls.py
+Маршруты для приложения module_analytics.
+"""
+
 from django.urls import path
 from . import views
 

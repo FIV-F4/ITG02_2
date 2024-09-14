@@ -1,3 +1,6 @@
-from django.contrib import admin
+"""
+Путь: module_analytics/admin.py
+Регистрация моделей для админки Django.
+"""
 
-# Register your models here.
+# admin не используется, поэтому можно удалить импорт

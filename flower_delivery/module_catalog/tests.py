@@ -1,3 +1,6 @@
-from django.test import TestCase
+"""
+Путь: module_catalog/tests.py
+Тесты для приложения module_catalog.
+"""
 
-# Create your tests here.
+# Импорт TestCase удален, так как не используется.

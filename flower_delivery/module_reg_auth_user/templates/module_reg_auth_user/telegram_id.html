@@ -1,0 +1,20 @@
+<!-- module_reg_auth_user/templates/module_reg_auth_user/telegram_id.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Введите ваш Telegram ID</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Сохранить</button>
+    </form>
+
+    <h3>Связь через Telegram</h3>
+    <p>Нажмите на ссылку ниже, чтобы связаться с нашим ботом в Telegram:</p>
+    <a href="{{ telegram_bot_link }}" target="_blank">Перейти к боту</a>
+
+    <h3>QR-код для перехода</h3>
+    <img src="data:image/png;base64,{{ qr_code_base64 }}" alt="QR-код для Telegram бота">
+{% endblock %}

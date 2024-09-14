@@ -1,3 +1,6 @@
-from django.contrib import admin
+"""
+Путь: module_catalog/admin.py
+Админ-панель для управления моделями приложения module_catalog.
+"""
 
-# Register your models here.
+# Импорт admin удален, так как не используется.

@@ -1,3 +1,6 @@
-from django.test import TestCase
+"""
+Путь: module_analytics/tests.py
+Тесты для приложения module_analytics.
+"""
 
-# Create your tests here.
+# Импорт TestCase не используется, можно удалить
