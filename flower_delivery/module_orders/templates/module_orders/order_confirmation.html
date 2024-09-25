@@ -1,2 +1,12 @@
-<h1>Спасибо за ваш заказ!</h1>
-<p>Номер вашего заказа: {{ order.id }}</p>
+{% extends 'base.html' %}
+
+{% block title %}Подтверждение заказа{% endblock %}
+
+{% block content %}
+<div class="alert alert-success" role="alert">
+    <h4 class="alert-heading">Спасибо за ваш заказ!</h4>
+    <p>Номер вашего заказа: <strong>{{ order.id }}</strong></p>
+    <hr>
+    <p class="mb-0">Вы можете просмотреть статус вашего заказа в разделе <a href="{% url 'order_list' %}">"Мои заказы"</a>.</p>
+</div>
+{% endblock %}

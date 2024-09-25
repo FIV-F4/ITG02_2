@@ -1,17 +1,24 @@
 {% extends 'base.html' %}
 
-{% block title %}Аналитика и Отчеты{% endblock %}
+{% block title %}Отчёты по заказам{% endblock %}
 
 {% block content %}
-<h1>Аналитика и Отчеты</h1>
+<h1 class="mb-4">Отчёты по заказам</h1>
 
-<table class="table">
+<div class="btn-group mb-4" role="group" aria-label="Навигация по отчётам">
+    <a href="{% url 'aggregate_report' 'daily' %}" class="btn btn-secondary">Дневной отчёт</a>
+    <a href="{% url 'aggregate_report' 'weekly' %}" class="btn btn-secondary">Недельный отчёт</a>
+    <a href="{% url 'aggregate_report' 'monthly' %}" class="btn btn-secondary">Месячный отчёт</a>
+    <a href="{% url 'aggregate_report' 'yearly' %}" class="btn btn-secondary">Годовой отчёт</a>
+</div>
+
+<table class="table table-striped">
     <thead>
         <tr>
             <th>ID</th>
+            <th>Номер заказа</th>
             <th>Дата</th>
-            <th>Заказ</th>
-            <th>Данные по продажам</th>
+            <th>Продажи</th>
             <th>Прибыль</th>
             <th>Расходы</th>
         </tr>
@@ -20,11 +27,11 @@
         {% for report in reports %}
         <tr>
             <td>{{ report.id }}</td>
-            <td>{{ report.date }}</td>
             <td>{{ report.order.id }}</td>
-            <td>{{ report.sales_data }}</td>
-            <td>{{ report.profit }}</td>
-            <td>{{ report.expenses }}</td>
+            <td>{{ report.date }}</td>
+            <td>{{ report.sales_data }} руб.</td>
+            <td>{{ report.profit }} руб.</td>
+            <td>{{ report.expenses }} руб.</td>
         </tr>
         {% endfor %}
     </tbody>

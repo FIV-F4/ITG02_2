@@ -1,4 +1,8 @@
-# module_reviews/urls.py
+"""
+Путь: module_reviews/urls.py
+Маршруты для управления отзывами на продукты.
+"""
+
 from django.urls import path
 from . import views
 

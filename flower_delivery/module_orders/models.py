@@ -1,50 +1,61 @@
-# module_orders/models.py
+"""
+Путь: module_orders/models.py
+Модели для управления заказами, продуктами и доставкой.
+"""
 
 from django.db import models
 from django.conf import settings
 
-# Модель для хранения информации о заказе
 class Order(models.Model):
+    """
+    Модель заказа.
+    """
     STATUS_CHOICES = [
-        ('cart', 'Корзина'),       # Заказ еще в корзине, не оформлен
-        ('ordered', 'Оформлен'),   # Заказ подтвержден пользователем
-        ('shipped', 'Отправлен'),  # Заказ отправлен покупателю
-        ('delivered', 'Доставлен'),# Заказ доставлен
-        ('cancelled', 'Отменен'),  # Заказ отменен
+        ('cart', 'Корзина'),
+        ('ordered', 'Оформлен'),
+        ('shipped', 'Отправлен'),
+        ('delivered', 'Доставлен'),
+        ('cancelled', 'Отменен'),
     ]
-
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='cart')
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        """
-        Возвращает строковое представление объекта заказа.
-        """
-        return f"Order {self.id} - {self.get_status_display()}"
+        return f"Order {self.id} - {self.get_status_display()}"  # Строковое представление продукта в заказе  # pylint: disable=no-member
 
     def is_ordered(self):
         """
         Проверяет, был ли заказ оформлен.
+        Возвращает True, если заказ имеет статус 'ordered'.
         """
         return self.status == 'ordered'
 
-# Модель для хранения информации о товарах в заказе
 class OrderProduct(models.Model):
+    """
+    Модель продукта в заказе.
+    """
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey('module_catalog.Products', on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    def __str__(self):
+        return f"{self.product.name} в заказе {self.order.id}"
 
-# Модель для хранения информации о доставке
 class Delivery(models.Model):
+    """
+    Модель доставки для заказа.
+    """
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     address = models.CharField(max_length=255)
     date = models.DateTimeField(auto_now_add=True)
     info = models.TextField(blank=True, null=True)
 
+    def __str__(self):
+        return f"Доставка для заказа {self.order.id} на адрес {self.address}"
 
-# Код для отправки обновлений о статусе заказа
+# Подавление предупреждения для примера кода
+# pylint: disable=pointless-string-statement
 '''
 @receiver(post_save, sender=Order)
 def send_status_update(sender, instance, **kwargs):

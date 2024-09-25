@@ -17,6 +17,9 @@ class Products(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='images/products')
 
+    def __str__(self):
+        return self.name  # Возвращаем название продукта
+
 # Пример создания продукта:
 # from module_catalog.models import Products
 #

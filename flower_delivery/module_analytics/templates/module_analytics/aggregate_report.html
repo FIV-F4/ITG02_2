@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Агрегированный отчет{% endblock %}
+
+{% block content %}
+<h1>{{ report.get_period_type_display }} отчет с {{ report.start_date }} по {{ report.end_date }}</h1>
+
+<ul class="list-group">
+    <li class="list-group-item"><strong>Общая сумма продаж:</strong> {{ report.total_sales }} руб.</li>
+    <li class="list-group-item"><strong>Общие расходы:</strong> {{ report.total_expenses }} руб.</li>
+    <li class="list-group-item"><strong>Общая прибыль:</strong> {{ report.total_profit }} руб.</li>
+    <li class="list-group-item"><strong>Общее количество заказов:</strong> {{ report.total_orders }}</li>
+    <li class="list-group-item"><strong>Общее количество проданных товаров:</strong> {{ report.total_products_sold }}</li>
+</ul>
+{% endblock %}

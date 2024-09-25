@@ -1,39 +1,11 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Регистрация</title>
-    <style>
-        .errorlist {
-            color: red;
-            font-size: 0.9em;
-        }
-        .form-table {
-            width: 100%;
-        }
-        .form-table td {
-            padding: 0.5em;
-        }
-    </style>
-</head>
-<body>
-    <h1>Регистрация</h1>
-    <form method="post" action="{% url 'register' %}">
-        {% csrf_token %}
+{% extends 'base.html' %}
+{% block title %}Регистрация{% endblock %}
 
-        <table class="form-table">
-            {{ form.as_table }}
-        </table>
-
-        {% if form.non_field_errors %}
-            <div class="errorlist">
-                {% for error in form.non_field_errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
-
-        <button type="submit">Зарегистрироваться</button>
-    </form>
-</body>
-</html>
+{% block content %}
+<h2 class="mb-4">Регистрация</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+</form>
+{% endblock %}

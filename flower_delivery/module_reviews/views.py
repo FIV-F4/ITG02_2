@@ -1,10 +1,16 @@
-# module_reviews/views.py
+"""
+Путь: module_reviews/views.py
+Представления для управления отзывами о продуктах.
+"""
+
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Review
 from module_catalog.models import Products
 from .forms import ReviewForm
 
 def product_reviews(request, product_id):
+    """
+    Отображает отзывы для указанного продукта и позволяет оставить новый отзыв.
+    """
     product = get_object_or_404(Products, id=product_id)
     reviews = product.reviews.all()
 

@@ -1,23 +1,60 @@
-<!-- module_reviews/product_reviews.html -->
 {% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Отзывы о {{ product.name }}{% endblock %}
 
 {% block content %}
-<h1>Отзывы о {{ product.name }}</h1>
+<h1 class="mb-4">Отзывы о {{ product.name }}</h1>
 
-<ul>
-    {% for review in reviews %}
-        <li>
-            <strong>{{ review.user.username }}</strong> ({{ review.created_at|date:"d.m.Y" }})<br>
-            Рейтинг: {{ review.rating }}/5<br>
-            <p>{{ review.comment }}</p>
-        </li>
-    {% endfor %}
-</ul>
+{% if reviews %}
+    <ul class="list-group mb-4">
+        {% for review in reviews %}
+            <li class="list-group-item">
+                <strong>{{ review.user.username }}</strong> <small class="text-muted">({{ review.created_at|date:"d.m.Y" }})</small>
+                <div class="mb-2">
+                    {% for i in "12345"|slice:":review.rating"|make_list %}
+                        <i class="fas fa-star checked"></i>
+                    {% endfor %}
+                    {% for i in "12345"|slice:"review.rating:"|make_list %}
+                        <i class="far fa-star"></i>
+                    {% endfor %}
+                </div>
+                <p>{{ review.comment }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Отзывов пока нет.</p>
+{% endif %}
 
-<h2>Добавить отзыв</h2>
+<h2 class="mb-4">Добавить отзыв</h2>
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Отправить отзыв</button>
+    <div class="form-group">
+        {{ form.rating.label_tag }}
+        {{ form.rating }}
+    </div>
+    <div class="form-group">
+        {{ form.comment.label_tag }}
+        {{ form.comment|add_class:"form-control" }}
+    </div>
+    <button type="submit" class="btn btn-primary">Отправить отзыв</button>
 </form>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.checked {
+    color: orange;
+}
+.fas.fa-star, .far.fa-star {
+    color: #ccc;
+    font-size: 20px;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Подключение последней версии Font Awesome 5.x -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 {% endblock %}

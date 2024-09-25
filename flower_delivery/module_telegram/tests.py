@@ -1,3 +1,8 @@
-from django.test import TestCase
+"""
+Путь: module_telegram/tests.py
+Тесты для модуля Telegram.
+"""
 
-# Create your tests here.
+
+
+# Добавьте тесты здесь.

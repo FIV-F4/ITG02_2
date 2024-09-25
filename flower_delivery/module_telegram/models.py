@@ -1,3 +1,6 @@
-from django.db import models
+"""
+Путь: module_telegram/models.py
+Модели для работы с Telegram-ботом.
+"""
 
-# Create your models here.
+# Удалён неиспользуемый импорт models

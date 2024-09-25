@@ -1,4 +1,8 @@
-# module_orders/urls.py
+"""
+Путь: module_orders/urls.py
+Маршруты для приложения module_orders.
+"""
+
 from django.urls import path
 from .views import cart_view, add_to_cart, checkout_view, order_confirmation, order_list_view
 

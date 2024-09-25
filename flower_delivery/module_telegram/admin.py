@@ -1,3 +1,6 @@
-from django.contrib import admin
+"""
+Путь: module_telegram/admin.py
+Регистрация моделей для модуля Telegram в админ-панели.
+"""
 
-# Register your models here.
+# Удалён неиспользуемый импорт admin

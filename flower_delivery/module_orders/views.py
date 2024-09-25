@@ -1,20 +1,24 @@
-# module_orders/views.py
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Order, OrderProduct
+"""
+Путь: module_orders/views.py
+Представления для управления заказами, корзиной и доставкой.
+"""
+
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404, redirect
 from module_catalog.models import Products
+from module_telegram.bot import notify_order_status  # Исправлен порядок импортов
+from .models import Order, OrderProduct
 from .forms import DeliveryForm
-from django.db.models import Prefetch
-from django.contrib import messages
-from django.shortcuts import redirect
-from module_telegram.bot import notify_order_status
+
 
 @login_required
 def cart_view(request):
-    # Получаем текущий заказ со статусом "Корзина" для текущего пользователя
-    order = Order.objects.filter(user=request.user, status='cart').first()
-    order_products = OrderProduct.objects.filter(order=order) if order else []
-    total_price = sum([product.price * product.quantity for product in order_products])
+    """
+    Отображает корзину пользователя.
+    """
+    order = Order.objects.filter(user=request.user, status='cart').first()  # pylint: disable=no-member
+    order_products = OrderProduct.objects.filter(order=order) if order else []  # pylint: disable=no-member
+    total_price = sum(product.price * product.quantity for product in order_products)  # pylint: disable=no-member
 
     context = {
         'order': order,
@@ -24,37 +28,33 @@ def cart_view(request):
     return render(request, 'module_orders/cart.html', context)
 
 
-
-
-
 @login_required
 def add_to_cart(request, product_id):
-    # Получаем продукт по ID
+    """
+    Добавляет продукт в корзину пользователя.
+    """
     product = get_object_or_404(Products, id=product_id)
-
-    # Получаем текущий заказ со статусом "Корзина" для текущего пользователя
-    order, created = Order.objects.get_or_create(user=request.user, status='cart')
-
-    # Проверяем, есть ли уже этот товар в заказе
-    order_product, created = OrderProduct.objects.get_or_create(order=order, product=product,defaults={'price': product.price})
-
+    order, _ = Order.objects.get_or_create(user=request.user, status='cart')  # pylint: disable=no-member
+    order_product, created = OrderProduct.objects.get_or_create(  # pylint: disable=no-member
+        order=order, product=product, defaults={'price': product.price}
+    )
     if created:
-        order_product.quantity = 1  # Если это новый товар в заказе
+        order_product.quantity = 1
     else:
-        order_product.quantity += 1  # Если товар уже есть, увеличиваем количество
-
-    order_product.price = product.price
+        order_product.quantity += 1
     order_product.save()
-
     return redirect('cart')
 
 
 @login_required
 def checkout_view(request):
-    order = Order.objects.filter(user=request.user, status='cart').first()
+    """
+    Оформление заказа и ввод информации о доставке.
+    """
+    order = Order.objects.filter(user=request.user, status='cart').first()  # pylint: disable=no-member
 
     if not order:
-        return redirect('cart')  # Если нет заказа в корзине, перенаправляем на страницу корзины
+        return redirect('cart')
 
     if request.method == 'POST':
         form = DeliveryForm(request.POST)
@@ -71,34 +71,27 @@ def checkout_view(request):
         form = DeliveryForm()
 
     return render(request, 'module_orders/checkout.html', {'form': form})
+
+
 @login_required
 def order_confirmation(request, order_id):
-    order = Order.objects.get(id=order_id, user=request.user)
-    return render(request, "module_orders/order_confirmation.html", {"order": order})
+    """
+    Подтверждение заказа после его оформления.
+    """
+    # pylint: disable=unused-argument
+    order = Order.objects.get(id=order_id, user=request.user)  # pylint: disable=no-member
+    return render(request, 'module_orders/order_confirmation.html', {"order": order})
 
 
-def order_list_view2(request):
-    orders = Order.objects.exclude(status='cart').order_by('-date')  # Заказы со всеми статусами, кроме 'cart'
-
-    # Получаем продукты для каждого заказа
-    order_products = {}
-    for order in orders:
-        order_products[order.id] = order.orderproduct_set.all()
-
-    return render(request, 'module_orders/order_list.html', {
-        'orders': orders,
-        'order_products': order_products,
-    })
-
-
-
-
-
+@login_required
 def order_list_view(request):
-    orders = Order.objects.filter(user=request.user).exclude(status='cart').order_by('-date')
+    """
+    Отображает список заказов пользователя, кроме заказов со статусом 'Корзина'.
+    """
+    orders = Order.objects.filter(user=request.user).exclude(status='cart').order_by('-date')  # pylint: disable=no-member
     order_products = []
     for order in orders:
-        products = OrderProduct.objects.filter(order=order)
+        products = OrderProduct.objects.filter(order=order)  # pylint: disable=no-member
         order_products.append((order, products))
 
     context = {
@@ -106,13 +99,16 @@ def order_list_view(request):
     }
     return render(request, 'module_orders/order_list.html', context)
 
-def update_order_status(request, order_id, new_status):
-    order = Order.objects.get(id=order_id)
+
+@login_required
+def update_order_status(order_id, new_status):
+    """
+    Обновляет статус заказа и отправляет уведомление.
+    """
+    from asgiref.sync import async_to_sync  # pylint: disable=import-outside-toplevel
+    order = Order.objects.get(id=order_id)  # pylint: disable=no-member
     order.status = new_status
     order.save()
 
-    # Вызываем асинхронную функцию уведомления
-    from asgiref.sync import async_to_sync
     async_to_sync(notify_order_status)(order_id, new_status)
-
     return redirect('order_list')

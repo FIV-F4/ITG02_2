@@ -1,3 +1,6 @@
-from django.contrib import admin
+"""
+Путь: module_reviews/admin.py
+Регистрация моделей для отзывов в админ-панели.
+"""
 
-# Register your models here.
+# Удален неиспользуемый импорт admin

@@ -1,6 +1,7 @@
-"""
-Путь: module_analytics/admin.py
-Регистрация моделей для админки Django.
-"""
+# module_analytics/admin.py
 
-# admin не используется, поэтому можно удалить импорт
+from django.contrib import admin
+from .models import Report, AggregateReport
+
+admin.site.register(Report)
+admin.site.register(AggregateReport)
